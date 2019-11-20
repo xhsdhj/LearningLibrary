@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "CServerSocket.h"
+#include "CChatSocket.h"
 
 
 // CMFCChatServerDlg 对话框
@@ -31,4 +33,11 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedStartBtn();
+	CListBox m_list;
+	CChatSocket* m_chat;
+	CServerSocket* m_server;
+	afx_msg void OnBnClickedSendBtn();
+	CString CMFCChatServerDlg::CatShowString(CString strInfo, CString strMsg);
 };
