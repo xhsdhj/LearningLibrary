@@ -42,4 +42,7 @@ public:
 	
 	afx_msg void OnBnClickedSendBtn();
 	CString CMFCChatClientDlg::CatShowString(CString strInfo, CString strMsg);
+	afx_msg void OnBnClickedSavenameBtn();
+	afx_msg void OnBnClickedAutosendRadio();
+	afx_msg void OnBnClickedClearmsgBtn();
 };

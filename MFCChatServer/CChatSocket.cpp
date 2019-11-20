@@ -26,7 +26,7 @@ void CChatSocket::OnReceive(int nErrorCode)
 	//3.显示到列表框
 
 	CString strShow;
-	CString strInfo = _T("客户端: ");
+	CString strInfo = _T("");
 	strShow = dlg->CatShowString(strInfo, strRecvMsg);
 
 	dlg->m_list.AddString(strShow);
