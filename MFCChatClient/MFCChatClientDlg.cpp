@@ -61,6 +61,7 @@ void CMFCChatClientDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_list);
 	DDX_Control(pDX, IDC_SENDMSG_EDIT, m_input);
+	DDX_Control(pDX, IDC_COLOUR_COMBO, m_WordColorCombo);
 }
 
 BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
@@ -72,8 +73,10 @@ BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CMFCChatClientDlg::OnLbnSelchangeList1)
 	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCChatClientDlg::OnBnClickedSendBtn)
 	ON_BN_CLICKED(IDC_SAVENAME_BTN, &CMFCChatClientDlg::OnBnClickedSavenameBtn)
-	ON_BN_CLICKED(IDC_AUTOSEND_RADIO, &CMFCChatClientDlg::OnBnClickedAutosendRadio)
+	//ON_BN_CLICKED(IDC_AUTOSEND_RADIO, &CMFCChatClientDlg::OnBnClickedAutosendRadio)
 	ON_BN_CLICKED(IDC_CLEARMSG_BTN, &CMFCChatClientDlg::OnBnClickedClearmsgBtn)
+	ON_BN_CLICKED(IDC_AUTOSEND_CHECK, &CMFCChatClientDlg::OnBnClickedAutosendCheck)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -136,8 +139,20 @@ BOOL CMFCChatClientDlg::OnInitDialog()
 		UpdateData(FALSE);
 	}
 
+	//初始化控件
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_DISCONNECT_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CONNECT_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_AUTOSEND_CHECK)->EnableWindow(FALSE);
 	
-	
+	m_WordColorCombo.AddString(_T("黑色"));
+	m_WordColorCombo.AddString(_T("红色"));
+	m_WordColorCombo.AddString(_T("蓝色"));
+	m_WordColorCombo.AddString(_T("绿色"));
+
+	//设置当前下标为零
+	m_WordColorCombo.SetCurSel(0);
+	SetDlgItemText(IDC_COLOUR_COMBO, _T("黑色"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -180,6 +195,35 @@ void CMFCChatClientDlg::OnPaint()
 	}
 	else
 	{
+		//1.定义dc
+		CPaintDC dc(this); // 用于绘制的设备上下文
+
+		//2.确定绘制的区域
+		CRect rect;
+		GetClientRect(&rect);
+		TRACE("width = %d, height = %d", rect.Width(), rect.Height());
+
+		//3.定义并创建一个内存设备环境 创建兼容性DC 搭桥梁
+		CDC dcBmp;
+		dcBmp.CreateCompatibleDC(&dcBmp);
+
+		//4.载入资源图片
+		CBitmap bmpBackGround;
+		bmpBackGround.LoadBitmap(IDB_CLOUD_BITMAP);
+
+		//5.将图片资源载入到位图里面 bBitMap位图
+		BITMAP bBitmap;
+		bmpBackGround.GetBitmap(&bBitmap);
+
+
+		//6.将位图选入临时的内存设备环境
+		CBitmap* pbmpOld = dcBmp.SelectObject(&bmpBackGround);
+
+		//7.开始绘制
+
+		dc.StretchBlt(0, 0, rect.Width(), rect.Height(),
+			&dcBmp, 0, 0, bBitmap.bmWidth, bBitmap.bmHeight, SRCCOPY);
+
 		CDialogEx::OnPaint();
 	}
 }
@@ -195,6 +239,12 @@ HCURSOR CMFCChatClientDlg::OnQueryDragIcon()
 
 void CMFCChatClientDlg::OnBnClickedConnectBtn()
 {
+
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_DISCONNECT_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CONNECT_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_AUTOSEND_CHECK)->EnableWindow(TRUE);
+
 	// TODO: 在此添加控件通知处理程序代码
 	CString strPort, strIP;
 
@@ -233,6 +283,26 @@ void CMFCChatClientDlg::OnBnClickedConnectBtn()
 void CMFCChatClientDlg::OnBnClickedDisconnectBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	//1.控制控件
+	GetDlgItem(IDC_SEND_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_DISCONNECT_BTN)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CONNECT_BTN)->EnableWindow(TRUE);
+	GetDlgItem(IDC_AUTOSEND_CHECK)->EnableWindow(FALSE);
+
+	//2.回收资源
+	m_client->Close();
+	if (m_client != NULL) {
+		delete m_client;
+		m_client = NULL;
+	}
+
+	//3.显示到列表框
+	CString strShow;
+	strShow = CatShowString(_T(""), _T("断开与服务器的连接成功!"));
+
+	m_list.AddString(strShow);
+	UpdateData(FALSE);
+
 }
 
 
@@ -317,23 +387,134 @@ void CMFCChatClientDlg::OnBnClickedSavenameBtn()
 }
 
 
-void CMFCChatClientDlg::OnBnClickedAutosendRadio()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (((CButton*)GetDlgItem(IDC_AUTOSEND_RADIO))->GetCheck())
-	{
-		//TRACE(" #####选中");
-		((CButton*)GetDlgItem(IDC_AUTOSEND_RADIO))->SetCheck(FALSE);
-	}
-	else {
-		//TRACE(" #####不选中");
-		((CButton*)GetDlgItem(IDC_AUTOSEND_RADIO))->SetCheck(TRUE);
-	}
-}
+// void CMFCChatClientDlg::OnBnClickedAutosendRadio()
+// {
+// 	// TODO: 在此添加控件通知处理程序代码
+// 	if (((CButton*)GetDlgItem(IDC_AUTOSEND_RADIO))->GetCheck())
+// 	{
+// 		//TRACE(" #####选中");
+// 		((CButton*)GetDlgItem(IDC_AUTOSEND_RADIO))->SetCheck(FALSE);
+// 	}
+// 	else {
+// 		//TRACE(" #####不选中");
+// 		((CButton*)GetDlgItem(IDC_AUTOSEND_RADIO))->SetCheck(TRUE);
+// 	}
+// }
 
 
 void CMFCChatClientDlg::OnBnClickedClearmsgBtn()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	m_list.ResetContent();
+}
+
+
+void CMFCChatClientDlg::OnBnClickedAutosendCheck()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (((CButton*)GetDlgItem(IDC_AUTOSEND_CHECK))->GetCheck())
+	{
+		//TRACE(" #####选中");
+		((CButton*)GetDlgItem(IDC_AUTOSEND_CHECK))->SetCheck(FALSE);
+	}
+	else {
+		//TRACE(" #####不选中");
+		((CButton*)GetDlgItem(IDC_AUTOSEND_CHECK))->SetCheck(TRUE);
+	}
+}
+
+
+HBRUSH CMFCChatClientDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	CString strColor;
+	m_WordColorCombo.GetWindowTextW(strColor);
+#if 0
+	if (strColor == L"黑色")
+	{
+		if (IDC_LIST1 == pWnd->GetDlgCtrlID() ||
+			IDC_SENDMSG_EDIT == pWnd->GetDlgCtrlID()) {
+			pDC->SetTextColor(RGB(0, 0, 0));
+		}
+	}
+	if (strColor == L"红色")
+	{
+		if (IDC_LIST1 == pWnd->GetDlgCtrlID() ||
+			IDC_SENDMSG_EDIT == pWnd->GetDlgCtrlID()) {
+			pDC->SetTextColor(RGB(255, 0, 0));
+		}
+	}
+	if (strColor == L"蓝色")
+	{
+		if (IDC_LIST1 == pWnd->GetDlgCtrlID() ||
+			IDC_SENDMSG_EDIT == pWnd->GetDlgCtrlID()) {
+			pDC->SetTextColor(RGB(0, 0, 255));
+		}
+	}
+	if (strColor == L"绿色")
+	{
+		if (IDC_LIST1 == pWnd->GetDlgCtrlID() ||
+			IDC_SENDMSG_EDIT == pWnd->GetDlgCtrlID()) {
+			pDC->SetTextColor(RGB(0, 255, 0));
+		}
+	}
+#endif
+	if (IDC_LIST1 == pWnd->GetDlgCtrlID() || IDC_SENDMSG_EDIT == pWnd->GetDlgCtrlID()) 
+	{
+		if (strColor == L"黑色") 
+		{
+			pDC->SetTextColor(RGB(0, 0, 0));
+		}
+		else if (strColor == L"红色") 
+		{
+			pDC->SetTextColor(RGB(255, 0, 0));
+		}
+		else if (strColor == L"蓝色") 
+		{
+			pDC->SetTextColor(RGB(0, 0, 255));
+		}
+		else if (strColor == L"绿色") 
+		{
+			pDC->SetTextColor(RGB(0, 255, 0));
+		}
+	}
+
+	return hbr;
+}
+
+
+BOOL CMFCChatClientDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// 规避回车键
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+	{
+		TRACE("回车");
+		return TRUE;
+	}
+	// 规避空格
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_SPACE)
+	{
+		TRACE("空格");
+		return TRUE;
+	}
+
+	//添加快捷键 Ctrl + X 退出整个对话框
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		if (GetKeyState(VK_CONTROL) < 0)//Ctrl 是否按下
+		{
+			TRACE("按下 Ctrl 键");
+			if (pMsg->wParam == 'X')
+			{
+				TRACE("按下 Ctrl 键 + X 键");
+				CDialogEx::OnOK();
+			}
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

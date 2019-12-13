@@ -7,6 +7,7 @@
 #define IDS_ABOUTBOX                    101
 #define IDD_MFCCHATSERVER_DIALOG        102
 #define IDR_MAINFRAME                   128
+#define IDB_HILL_BITMAP                 131
 #define IDC_STOP_BTN                    1000
 #define IDC_CAL_BTN                     1001
 #define IDC_MAIL_BTN                    1002
@@ -19,14 +20,15 @@
 #define IDC_MSG_LIST                    1009
 #define IDC_COMBO                       1010
 #define IDC_COLOUR_COMBO                1010
+#define IDC_BAIDU_BTN                   1011
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        130
+#define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1011
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

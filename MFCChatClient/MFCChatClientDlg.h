@@ -43,6 +43,10 @@ public:
 	afx_msg void OnBnClickedSendBtn();
 	CString CMFCChatClientDlg::CatShowString(CString strInfo, CString strMsg);
 	afx_msg void OnBnClickedSavenameBtn();
-	afx_msg void OnBnClickedAutosendRadio();
+	//afx_msg void OnBnClickedAutosendRadio();
 	afx_msg void OnBnClickedClearmsgBtn();
+	afx_msg void OnBnClickedAutosendCheck();
+	CComboBox m_WordColorCombo;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
