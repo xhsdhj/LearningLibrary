@@ -23,8 +23,11 @@ public:
 	string str() const;
 	friend ostream& operator<<(ostream& os,
 		const quickLapis& stone);
-	quickLapis operator+(const quickLapis& stone);
+	quickLapis operator+(const quickLapis& lapi);
+	quickLapis operator-(const quickLapis& lapi);
+	int getCount() const;
 
+	bool operator>=(const quickLapis& lapi);
 private:
 	int count;				//灵石的数量: xxx块
 	QuickLapisLeve1 level;	//灵石的等级

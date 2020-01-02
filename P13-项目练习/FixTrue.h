@@ -49,7 +49,10 @@ public:
 	int getPower() const;
 
 	//捕获妖兽
-	bool fight(const Warcraft& warcraft);
+	void fight(const Warcraft& warcraft);
+
+	//修真者死亡后的处理
+	void dead();
 
 	friend ostream& operator<<(ostream& os, const FixTrue& fixtrue);
 	friend ostream& operator<<(ostream& os, const ImmortalLevel level);
@@ -61,6 +64,9 @@ private:
 	vector<quickLapis> lapis;	//灵石资产
 	vector<Warcraft> warcrafts;	//妖兽资产
 	bool alive;					//生死状态
+
+	bool hadMonster(const Warcraft& monster);			//判断是否有指定妖兽
+	bool removeMonster(const Warcraft& monster);		//移除指定妖兽
 };
 
 ostream& operator<<(ostream& os, const FixTrue& fixtrue);

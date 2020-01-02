@@ -40,18 +40,19 @@ ostream& operator<<(ostream& os, const quickLapis& stone)
 	return os;
 }
 
-quickLapis quickLapis::operator+(const quickLapis& stone)
+quickLapis quickLapis::operator+(const quickLapis& lapi)
 {
 	int sum = 0;
-	if (stone.level == QuickLapisLeve1::PRIMARY_LEVEL) {
-		sum += stone.count;
+	if (lapi.level == QuickLapisLeve1::PRIMARY_LEVEL) {
+		sum += lapi.count;
 	}
-	else if (stone.level == QuickLapisLeve1::MIDDLE_LEVEL) {
-		sum += stone.count * 10;
+	else if (lapi.level == QuickLapisLeve1::MIDDLE_LEVEL) {
+		sum += lapi.count * 10;
 	}
-	else if (stone.level == QuickLapisLeve1::ADVANCE_LEVEL) {
-		sum += stone.count * 100;
+	else if (lapi.level == QuickLapisLeve1::ADVANCE_LEVEL) {
+		sum += lapi.count * 100;
 	}
+
 
 	if (this->level == QuickLapisLeve1::PRIMARY_LEVEL) {
 		sum += this->count;
@@ -64,4 +65,73 @@ quickLapis quickLapis::operator+(const quickLapis& stone)
 	}
 
 	return quickLapis(sum, QuickLapisLeve1::PRIMARY_LEVEL);
+}
+
+quickLapis quickLapis::operator-(const quickLapis& lapi)
+{
+	int sum1 = 0;
+	int sum2 = 0;
+	if (this->level == QuickLapisLeve1::PRIMARY_LEVEL)
+	{
+		sum1 = this->count;
+	}
+	else if (this->level == QuickLapisLeve1::MIDDLE_LEVEL)
+	{
+		sum1 = this->count * 10;
+	}
+	else if (this->level == QuickLapisLeve1::ADVANCE_LEVEL)
+	{
+		sum1 = this->count * 100;
+	}
+
+	if (lapi.level == QuickLapisLeve1::PRIMARY_LEVEL)
+	{
+		sum2 = lapi.count;
+	}
+	else if (lapi.level == QuickLapisLeve1::MIDDLE_LEVEL)
+	{
+		sum2 = lapi.count * 10;
+	}
+	else if (lapi.level == QuickLapisLeve1::ADVANCE_LEVEL)
+	{
+		sum2 = lapi.count * 100;
+	}
+
+	return quickLapis(sum1-sum2,QuickLapisLeve1::PRIMARY_LEVEL);
+}
+
+int quickLapis::getCount() const
+{
+	return count;
+}
+
+bool quickLapis::operator>=(const quickLapis& lapi)
+{
+	int sum1 = 0;
+	int sum2 = 0;
+	if (this->level == QuickLapisLeve1::PRIMARY_LEVEL)
+	{
+		sum1 = this->count;
+	}else if (this->level == QuickLapisLeve1::MIDDLE_LEVEL)
+	{
+		sum1 = this->count * 10;
+	}else if (this->level == QuickLapisLeve1::ADVANCE_LEVEL)
+	{
+		sum1 = this->count * 100;
+	}
+
+	if (lapi.level == QuickLapisLeve1::PRIMARY_LEVEL)
+	{
+		sum2 = lapi.count;
+	}
+	else if (lapi.level == QuickLapisLeve1::MIDDLE_LEVEL)
+	{
+		sum2 = lapi.count * 10;
+	}
+	else if (lapi.level == QuickLapisLeve1::ADVANCE_LEVEL)
+	{
+		sum2 = lapi.count * 100;
+	}
+
+	return sum1 >= sum2;	
 }

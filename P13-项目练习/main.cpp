@@ -13,6 +13,7 @@ void testWarcraft() {
 	cout << warcraft << endl;
 }
 
+/*挖矿*/
 void testFixTrue() {
 	FixTrue hhf("黄海峰", "奇牛派", ImmortalLevel::LIAN_QI);
 	cout << hhf << endl;
@@ -21,6 +22,51 @@ void testFixTrue() {
 		hhf.mining();
 	}
 	cout << hhf << endl;
+
+	Warcraft warcraft(1, "蛟龙");
+	hhf.fight(warcraft);
+	cout << "\n捕获"<< warcraft << "之后: " << endl;
+	cout << hhf << endl;
+
+	Warcraft warcraft2(1, "蜘蛛");
+	hhf.fight(warcraft2);
+	Warcraft warcraft3(1, "壁虎");
+	hhf.fight(warcraft3);
+	cout << "\n捕获" << warcraft2 << "和" << warcraft3 <<"之后: " << endl;
+	cout << hhf << endl;
+
+	hhf.trade(warcraft2);
+	cout << "\n售卖" << warcraft2 << "之后:" << endl;
+	cout << hhf << endl;
+
+	hhf.trade();
+	cout << "\n售卖所有妖兽之后:" << endl;
+	cout << hhf << endl;
+
+	FixTrue ldm("罗冬梅", "黄枫谷", ImmortalLevel::JIE_DAN);
+	cout << ldm << endl;
+
+	Warcraft warcraft4(2, "蛟龙");
+	ldm.fight(warcraft4);
+	cout << ldm << endl;
+
+	cout << "\n贸易之后:" << endl;
+	hhf.trade(ldm, warcraft4);
+	cout << hhf << endl;
+	cout << ldm << endl;
+	cout << "---------测试 trade-----------" << endl;
+
+	Warcraft warcraft5(1, "天蚕");
+	ldm.fight(warcraft5);
+	cout << ldm << endl << endl;
+
+	hhf.trade(warcraft4, ldm, warcraft5);
+	cout << hhf << endl;
+	cout << ldm << endl<<endl;
+
+	ldm.trade(warcraft4, hhf);
+	cout << hhf << endl;
+	cout << ldm << endl << endl;
 }
 
 int main(void) {
